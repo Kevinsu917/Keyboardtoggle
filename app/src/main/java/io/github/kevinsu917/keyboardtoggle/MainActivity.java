@@ -21,8 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout rlContainer;
     SharedPreferences sharedPreferences;
 
-    private int originHeight;//表情栏的开始定义的高度,可以用SharedPreferences来保存上次就的高度
-    private int keyboardHeight = originHeight;
+    private int keyboardHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +58,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (rlContainer.getVisibility() == View.GONE) {
                     setInputMode(true);
                 } else {
-                    if (keyboardHeight == originHeight) {
+                    if (keyboardHeight == 0) {
                         setInputMode(true);
+                        rlContainer.setVisibility(View.GONE);
                     } else {
                         setInputMode(false);
+                        rlContainer.setVisibility(View.INVISIBLE);
                     }
                 }
             }
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSoftKeyboardOpened(int keyboardHeightInPx) {
                 Log.e(tag, "onSoftKeyboardOpened==" + keyboardHeightInPx);
-                if (keyboardHeight == originHeight && keyboardHeight != keyboardHeightInPx) {
+                if (keyboardHeight == 0 && keyboardHeight != keyboardHeightInPx) {
                     keyboardHeight = keyboardHeightInPx;
                     setContainerHeight();
                     saveSharedPreferencesHeight();
@@ -97,16 +98,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     void faceClick() {
         if (rlContainer.getVisibility() == View.VISIBLE) {
-            if (keyboardHeight == originHeight) {
+            if (keyboardHeight == 0) {
                 setInputMode(true);
                 rlContainer.setVisibility(View.GONE);
             } else {
                 setInputMode(false);
                 rlContainer.setVisibility(View.INVISIBLE);
             }
+            //如果EditText没有获取焦点,需要获取焦点先,否则不会弹出键盘
+            if(!etInput.hasFocus()){
+                etInput.requestFocus();
+            }
             Functiions.showInputMethodForQuery(MainActivity.this, etInput);
         } else {
-            setInputMode(false);
+            if (keyboardHeight == 0) {
+                setInputMode(true);
+            } else {
+                setInputMode(false);
+            }
             rlContainer.setVisibility(View.VISIBLE);
             Functiions.hideInputMethod(MainActivity.this, etInput);
         }
@@ -141,8 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 保存键盘的高度
      */
     private void getSharedPreferencesHeight(){
-        keyboardHeight = sharedPreferences.getInt(heightKey, originHeight);
-        originHeight = keyboardHeight;
+        keyboardHeight = sharedPreferences.getInt(heightKey, 0);
     }
 
 

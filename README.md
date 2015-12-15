@@ -65,4 +65,4 @@ public void onGlobalLayout() {
 
 需求需要时刻保持输入的EditText处于页面的最底部,那么我们一般将inputMode设置为SOFT_INPUT_ADJUST_RESIZE,但是如果当表情栏也现实的情况下,如果让inputMode还处于SOFT_INPUT_ADJUST_RESIZE的模式下,就会把表情栏也顶上去,所以这个时候应该切换成SOFT_INPUT_ADJUST_PAN,所以就需要判断当表情栏的情况下,切换两种模式.
 
-[具体我github上的工程]()
+[具体我github上的工程](https://github.com/Kevinsu917/Keyboardtoggle)
